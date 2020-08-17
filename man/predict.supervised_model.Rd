@@ -2,10 +2,11 @@
 % Please edit documentation in R/fasttext.R
 \name{predict.supervised_model}
 \alias{predict.supervised_model}
+\alias{ft_predict}
 \title{Predict using a Previously Trained Model}
 \usage{
-\method{predict}{supervised_model}(
-  object,
+ft_predict(
+  model,
   newdata = character(),
   k = 1L,
   threshold = 0,
@@ -14,7 +15,7 @@
 )
 }
 \arguments{
-\item{object}{an object inheriting from \code{'fasttext'}.}
+\item{model}{an object inheriting from \code{'fasttext'}.}
 
 \item{newdata}{a character vector giving the new data.}
 
@@ -47,6 +48,6 @@ Predict values based on a previously trained model.
 }
 \examples{
 \dontrun{
-predict(object, newdata)
+ft_predict(model, newdata)
 }
 }

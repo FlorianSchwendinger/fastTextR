@@ -31,18 +31,19 @@ as shown in
 [classification-example.sh](https://github.com/facebookresearch/fastText/blob/master/classification-example.sh).
 
 ```{r}
-library("fastText")
+library("fastTextR")
 
 train <- sample(sprintf("__label__%s", readLines("dbpedia_csv/train.csv")))
 head(train)
 
-train <- normalize(train)
+train <- ft_normalize(train)
 writeLines(train, con = "dbpedia.train")
 
 test <- readLines("dbpedia_csv/test.csv")
-test <- normalize(test)
-labels <- gsub("\\D", "", substr(test, 1, 4))
-test <- substr(test, 5, max(nchar(test)))
+labels <- trimws(gsub(",.*", "", test))
+table(labels)
+test <- ft_normalize(test)
+test <- trimws(sub(".*?,", "", test))
 head(test)
 head(labels)
 ```
@@ -51,28 +52,26 @@ head(labels)
 After the data preparation the model can be trained and is saved to 
 the file `"dbpedia.bin"`.
 ```{r}
-cntrl <- ft.control(word_vec_size = 10L, learning_rate = 0.1, max_len_ngram = 2L, 
-                    min_count = 1L, nbuckets = 10000000L, epoch = 5L, nthreads = 20L)
+cntrl <- ft_control(word_vec_size = 10L, learning_rate = 0.1, max_len_ngram = 2L, 
+                    min_count = 1L, nbuckets = 10000000L, epoch = 5L, nthreads = 4L)
 
-model <- fasttext(input = "dbpedia.train", method = "supervised", control = cntrl)
-save.fasttext(model, "dbpedia")
+model <- ft_train(file = "dbpedia.train", method = "supervised", control = cntrl)
+ft_save(model, "dbpedia.bin")
 ```
 
 ### Read Model
 A previously trained model can be loaded via the function `read.fasttext`.
 ```{r}
-model <- read.fasttext( "dbpedia.bin" )
+model <- ft_load("dbpedia.bin")
 ```
 
 ### Predict / Test Model
 To perform prediction the function `predict` can be used.
 ```{r}
-test.pred <- predict(model, test, k = 1L, prob = TRUE)
-str(test.pred)
-test.pred <- predict(model, test, k = 1L, prob = FALSE)
-str(test.pred)
+test_pred <- ft_predict(model, new_data=test, k = 1L)
+str(test_pred)
 
-confusion_matrix <- table(labels, gsub("\\D", "", test.pred$label))
+confusion_matrix <- table(as.integer(labels), as.integer(gsub("\\D", "", test_pred$label)))
 confusion_matrix
 
 sum(diag(confusion_matrix)) / sum(confusion_matrix)
@@ -90,7 +89,7 @@ if ( !file.exists(fn) ) {
 
 fn <- "rw.zip"
 if ( !file.exists(fn) ) {
-    url <- "http://stanford.edu/~lmthang/morphoNLM/rw.zip"
+    url <- "http://www-nlp.stanford.edu/~lmthang/morphoNLM/rw.zip"
     download.file(url, fn)
     unzip(fn)
 }
@@ -144,29 +143,32 @@ clean_wiki <- function(x) {
 }
 
 library(XML)
-html <- htmlParse("enwik9", encoding = "UTF-8")
-txt <- xpathSApply(html, "//text", xmlValue) 
-txt <- grep("#redirect", txt, value = TRUE, ignore.case = TRUE, invert = TRUE)
-txt <- clean_wiki_pearl(txt)
-txt <- paste(txt, collapse = " ")
-txt <- gsub("\\s+", " ", txt)
-writeLines(txt, con = "fil9")
+fn <- "fil9"
+if ( !file.exists(fn) ) {
+    html <- htmlParse("enwik9", encoding = "UTF-8")
+    txt <- xpathSApply(html, "//text", xmlValue) 
+    txt <- grep("#redirect", txt, value = TRUE, ignore.case = TRUE, invert = TRUE)
+    txt <- clean_wiki(txt)
+    txt <- paste(txt, collapse = " ")
+    txt <- gsub("\\s+", " ", txt)
+    writeLines(txt, con = fn)
+}
 ```
 
 ### Train Model
 ```{r}
-cntrl <- ft.control(learning_rate = 0.025, word_vec_size = 5, epoch = 1, 
-                    nthreads = 10L)
+cntrl <- ft_control(learning_rate = 0.025, word_vec_size = 5, epoch = 1, 
+                    nthreads = 10L, verbose = 2L)
 
-model <- fasttext("fil9", "skipgram", cntrl)
+model <- ft_train("fil9", method = "skipgram", control = cntrl)
 model
 
-save.fasttext(model, "fil9_skipgram_model")
+ft_save(model, "fil9_skipgram_model.bin")
 ```
 
 ### Load Model
 ```{r}
-model <- read.fasttext("fil9_skipgram_model.bin")
+model <- ft_load("fil9_skipgram_model.bin")
 ```
 
 ### Obtain Word Vectors

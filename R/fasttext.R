@@ -93,8 +93,8 @@ fasttext <- function() {
         return(invisible(NULL))
     }
 
-    model$save <- function(file) {
-        ft_save(parent.env(environment())$model, file)
+    model$save <- function(file, what = c("model", "vectors", "output")) {
+        ft_save(parent.env(environment())$model, file, what = what)
     }
     
     model$train <- function(file, method = c("supervised", "cbow", "skipgram"), 
@@ -122,7 +122,7 @@ fasttext <- function() {
         ft_word_vectors(parent.env(environment())$model, words)
     }
 
-    model$fnearest_neighbors <- function(word, k = 10L) {
+    model$nearest_neighbors <- function(word, k = 10L) {
         ft_nearest_neighbors(parent.env(environment())$model, word, k)
     }
 
