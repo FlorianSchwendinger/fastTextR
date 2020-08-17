@@ -15,11 +15,34 @@ library("fastTextR")
 
 ft <- fasttext()
 ft$load("cc.en.300.bin")
+words <- "enviroment"
 ft$word_vectors("enviroment")
+words <- c("asparagus", "pidgey", "yellow")
 ft$word_vectors(c("asparagus", "pidgey", "yellow"))
 
-ft$fnearest_neighbors('asparagus')
+ft$nearest_neighbors('asparagus', k = 5L)
+
+
+ft$analogies(c("berlin", "germany", "france"))
+
+
+model <- ft_load("cc.en.300.bin")
+model
 
 
 
+
+attach(getNamespace("fastTextR"))
+
+all_words <- Rft_all_words(model$pointer)
+length(all_words)
+head(all_words)
+
+
+ft_word_vectors(model, "enviroment")
+ft_word_vectors(model, c("asparagus", "pidgey", "yellow"))
+
+ft_nearest_neighbors(model, 'asparagus', k = 5L)
+
+ft_analogies(model, c("berlin", "germany", "france"))
 

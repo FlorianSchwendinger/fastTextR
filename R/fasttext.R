@@ -339,7 +339,7 @@ ft_word_vectors <- function(model, words) {
     stopifnot(is.character(words), all(nchar(words) > 0))
     stopifnot( inherits(model, "fasttext") )
     word_vec <- Rft_word_vectors(model$pointer, words)
-    word_vec <- matrix(word_vec, nrow=length(words), byrow=TRUE)
+    word_vec <- do.call(rbind, word_vec)
     rownames(word_vec) <- words
     word_vec
 }

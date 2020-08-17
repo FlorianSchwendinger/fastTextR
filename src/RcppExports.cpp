@@ -118,7 +118,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // Rft_dict_get_ntokens
-int Rft_dict_get_ntokens(SEXP ft);
+double Rft_dict_get_ntokens(SEXP ft);
 RcppExport SEXP _fastTextR_Rft_dict_get_ntokens(SEXP ftSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

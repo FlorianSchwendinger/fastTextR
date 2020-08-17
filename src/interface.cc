@@ -160,11 +160,11 @@ int Rft_dict_get_nlabels(SEXP ft) {
 }
 
 // [[Rcpp::export]]
-int Rft_dict_get_ntokens(SEXP ft) {
+double Rft_dict_get_ntokens(SEXP ft) {
     Rcpp::XPtr<FastText>fast_text(ft);
     std::shared_ptr<const Dictionary> dict = fast_text->getDictionary();
-    int32_t n = dict->ntokens();
-    return n;
+    int64_t n = dict->ntokens();
+    return static_cast<double>(n);
 }
 
 //
