@@ -5,16 +5,13 @@
 \title{Train a Model}
 \usage{
 ft_train(file, method = c("supervised", "cbow", "skipgram"),
-  output = "", control = ft_control(), ...)
+  control = ft_control(), ...)
 }
 \arguments{
 \item{file}{a character string giving the location of the input file.}
 
 \item{method}{a character string giving the method, possible values are 
 \code{'supervised'}, \code{'cbow'} and \code{'skipgram'}.}
-
-\item{output}{an optional character string giving the location of the output file.
-If a file name is provided \code{save\_output} is set to \code{TRUE}.}
 
 \item{control}{a list giving the control variables, for more information
 see \code{\link{ft_control}}.}
@@ -27,7 +24,7 @@ Train a new word representation model or supervised
 }
 \examples{
 \dontrun{
-model <- ft_train("my_data.txt", method="supervised", output="ft_model",
-                  control = ft_control(nthreads = 1L))
+cntrl <- ft_control(nthreads = 1L)
+model <- ft_train("my_data.txt", method="supervised", control = cntrl)
 }
 }

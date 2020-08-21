@@ -97,9 +97,7 @@ fasttext <- function() {
     model$ntoken <- 0L
     model$nlabels <- 0L
 
-    #model$update <- function(new_model) {
     update_model <- function(self, new_model) {
-        # self <- parent.env(environment())$model
         self$pointer <- new_model$pointer
         self$model_type <- new_model$model_type
         self$nwords <- new_model$nwords
@@ -111,7 +109,6 @@ fasttext <- function() {
 
     model$load <- function(file) {
         self <- parent.env(environment())$model
-        # self$update(ft_load(file))
         update_model(self, ft_load(file))
         return(invisible(NULL))
     }
@@ -121,10 +118,9 @@ fasttext <- function() {
     }
     
     model$train <- function(file, method = c("supervised", "cbow", "skipgram"), 
-                            output = "", control = ft_control(), ...) {
+                            control = ft_control(), ...) {
         self <- parent.env(environment())$model
-        # self$update(ft_train(file, method, output, control, ...))
-        update_model(self, ft_train(file, method, output, control, ...))
+        update_model(self, ft_train(file, method, control, ...))
         return(invisible(NULL))
     }
 
@@ -177,8 +173,6 @@ fasttext <- function() {
 #' @description Train a new word representation model or supervised 
 #'              classification model.
 #' @param file a character string giving the location of the input file.
-#' @param output an optional character string giving the location of the output file.
-#'               If a file name is provided \code{save\_output} is set to \code{TRUE}.
 #' @param method a character string giving the method, possible values are 
 #'               \code{'supervised'}, \code{'cbow'} and \code{'skipgram'}.
 #' @param control a list giving the control variables, for more information
@@ -186,20 +180,18 @@ fasttext <- function() {
 #' @param ... additional control arguments inserted into the control list.
 #' @examples
 #' \dontrun{
-#' model <- ft_train("my_data.txt", method="supervised", output="ft_model",
-#'                   control = ft_control(nthreads = 1L))
+#' cntrl <- ft_control(nthreads = 1L)
+#' model <- ft_train("my_data.txt", method="supervised", control = cntrl)
 #' }
 ft_train <- function(file, method = c("supervised", "cbow", "skipgram"), 
-                     output = "", control = ft_control(), ...) {
+                     control = ft_control(), ...) {
     method <- match.arg(method)
-    stopifnot( is.character(file), is.character(output) )
+    stopifnot( is.character(file) )
     stopifnot( file.exists(file) )
     control <- modifyList(control, list(...))
 
     control$input <- file
     control$method <- method
-    control$output <- output
-    control$save_output <- if (nchar(output) > 0L)  TRUE else FALSE
 
     check_control_arguments(control)
     

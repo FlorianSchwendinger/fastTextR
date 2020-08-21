@@ -4,10 +4,9 @@ import(Rcpp)
 importFrom(stats, predict)
 importFrom(graphics, plot.new, plot.window, symbols, strwidth, text)
 importFrom(slam, simple_triplet_matrix)
-importFrom(utils, modifyList)
+importFrom(utils, modifyList, capture.output, str)
 
 export(fasttext)
-
 
 export(ft_control)
 
