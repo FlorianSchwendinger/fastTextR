@@ -28,6 +28,18 @@
 #' @param pretrained_vectors a character string giving the file path
 #'                           to the pretrained word vectors which are used 
 #'                           for the supervised learning.
+#' @param save_output a logical (default is \code{FALSE})
+#' @param seed an integer 
+#' @param qnorm  a logical (default is \code{FALSE})
+#' @param retrain a logical (default is \code{FALSE})
+#' @param qout a logical (default is \code{FALSE})
+#' @param cutoff an integer (default is \code{0L})
+#' @param dsub an integer (default is \code{2L})
+#' @param autotune_validation_file="", 
+#' @param autotune_metric a character string (default is \code{"f1"})
+#' @param autotune_predictions an integer (default is \code{1L})
+#' @param autotune_duration an integer (default is \code{300L})
+#' @param autotune_model_size a character string
 #' @return a list with the control variables.
 #' @examples
 #' ft_control(learning_rate=0.1)
@@ -104,7 +116,7 @@ fasttext <- function() {
         return(invisible(NULL))
     }
 
-    model$predict <- function(newdata = character(), k = 1L, threshold = 0, 
+    model$predict <- function(newdata, k = 1L, threshold = 0, 
                               rval = c("sparse", "dense", "slam"), ...) {
         self <- parent.env(environment())$model
         ft_predict(self, newdata, k, threshold, rval, ...)
@@ -216,11 +228,12 @@ ft_train <- function(file, method = c("supervised", "cbow", "skipgram"),
 #' }
 #' @name predict.supervised_model
 #' @rdname predict.supervised_model
-ft_predict <- function(model, newdata = character(), k = 1L, threshold = 0, 
+ft_predict <- function(model, newdata, k = 1L, threshold = 0, 
                        rval = c("sparse", "dense", "slam"), ...) {
-    stopifnot( inherits(model, "fasttext") )
+    stopifnot( inherits(model, "fasttext"), inherits(newdata, "character") )
+
     rval <- match.arg(rval)
-    pred <- fastTextR:::Rft_predict_vec(model$pointer, newdata, as.integer(k), threshold = threshold)
+    pred <- Rft_predict_vec(model$pointer, newdata, as.integer(k), threshold = threshold)
 
     if (rval == "sparse") return(data.frame(pred, stringsAsFactors = FALSE))
 

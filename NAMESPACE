@@ -1,11 +1,10 @@
 useDynLib(fastTextR, .registration = TRUE)
 
-
 import(Rcpp)
 importFrom(stats, predict)
 importFrom(graphics, plot.new, plot.window, symbols, strwidth, text)
 importFrom(slam, simple_triplet_matrix)
-
+importFrom(utils, modifyList)
 
 export(fasttext)
 

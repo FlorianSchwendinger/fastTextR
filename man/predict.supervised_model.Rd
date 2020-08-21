@@ -5,14 +5,8 @@
 \alias{ft_predict}
 \title{Predict using a Previously Trained Model}
 \usage{
-ft_predict(
-  model,
-  newdata = character(),
-  k = 1L,
-  threshold = 0,
-  rval = c("sparse", "dense", "slam"),
-  ...
-)
+ft_predict(model, newdata, k = 1L, threshold = 0, rval = c("sparse",
+  "dense", "slam"), ...)
 }
 \arguments{
 \item{model}{an object inheriting from \code{'fasttext'}.}

@@ -12,5 +12,7 @@ Description: An interface to the 'fastText' library
 	An example how to use 'fastTextR' can be found in the 'README' file.
 License: MIT + file LICENSE
 Imports: stats, graphics, Rcpp (>= 0.12.4), slam
+Suggests: knitr, rmarkdown
+VignetteBuilder: knitr
 LinkingTo: Rcpp
 RoxygenNote: 7.1.1
