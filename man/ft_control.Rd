@@ -74,6 +74,8 @@ for the supervised learning.}
 
 \item{dsub}{an integer (default is \code{2L})}
 
+\item{autotune_validation_file}{a character string}
+
 \item{autotune_metric}{a character string (default is \code{"f1"})}
 
 \item{autotune_predictions}{an integer (default is \code{1L})}
@@ -81,8 +83,6 @@ for the supervised learning.}
 \item{autotune_duration}{an integer (default is \code{300L})}
 
 \item{autotune_model_size}{a character string}
-
-\item{autotune_validation_file="", }{}
 }
 \value{
 a list with the control variables.

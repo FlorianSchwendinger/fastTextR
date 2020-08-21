@@ -119,17 +119,17 @@ void Args::parseArgs(const std::vector<std::string>& args) {
   }
   for (int ai = 2; ai < args.size(); ai += 2) {
     if (args[ai][0] != '-') {
-      std::cerr << "Provided argument without a dash! Usage:" << std::endl;
+      Rcpp::Rcerr << "Provided argument without a dash! Usage:" << std::endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("EXIT_FAILURE");
     }
     try {
       setManual(args[ai].substr(1));
 
       if (args[ai] == "-h") {
-        std::cerr << "Here is the help! Usage:" << std::endl;
+        Rcpp::Rcerr << "Here is the help! Usage:" << std::endl;
         printHelp();
-        exit(EXIT_FAILURE);
+        Rcpp::stop("EXIT_FAILURE");
       } else if (args[ai] == "-input") {
         input = std::string(args.at(ai + 1));
       } else if (args[ai] == "-output") {
@@ -163,9 +163,9 @@ void Args::parseArgs(const std::vector<std::string>& args) {
             args.at(ai + 1) == "one-vs-all" || args.at(ai + 1) == "ova") {
           loss = loss_name::ova;
         } else {
-          std::cerr << "Unknown loss: " << args.at(ai + 1) << std::endl;
+          Rcpp::Rcerr << "Unknown loss: " << args.at(ai + 1) << std::endl;
           printHelp();
-          exit(EXIT_FAILURE);
+          Rcpp::stop("EXIT_FAILURE");
         }
       } else if (args[ai] == "-bucket") {
         bucket = std::stoi(args.at(ai + 1));
@@ -214,20 +214,20 @@ void Args::parseArgs(const std::vector<std::string>& args) {
       } else if (args[ai] == "-autotune-modelsize") {
         autotuneModelSize = std::string(args.at(ai + 1));
       } else {
-        std::cerr << "Unknown argument: " << args[ai] << std::endl;
+        Rcpp::Rcerr << "Unknown argument: " << args[ai] << std::endl;
         printHelp();
-        exit(EXIT_FAILURE);
+        Rcpp::stop("EXIT_FAILURE");
       }
     } catch (std::out_of_range) {
-      std::cerr << args[ai] << " is missing an argument" << std::endl;
+      Rcpp::Rcerr << args[ai] << " is missing an argument" << std::endl;
       printHelp();
-      exit(EXIT_FAILURE);
+      Rcpp::stop("EXIT_FAILURE");
     }
   }
   if (input.empty() || output.empty()) {
-    std::cerr << "Empty input or output path." << std::endl;
+    Rcpp::Rcerr << "Empty input or output path." << std::endl;
     printHelp();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   if (wordNgrams <= 1 && maxn == 0 && !hasAutotune()) {
     bucket = 0;
@@ -243,7 +243,7 @@ void Args::printHelp() {
 }
 
 void Args::printBasicHelp() {
-  std::cerr << "\nThe following arguments are mandatory:\n"
+  Rcpp::Rcerr << "\nThe following arguments are mandatory:\n"
             << "  -input              training file path\n"
             << "  -output             output file path\n"
             << "\nThe following arguments are optional:\n"
@@ -251,7 +251,7 @@ void Args::printBasicHelp() {
 }
 
 void Args::printDictionaryHelp() {
-  std::cerr << "\nThe following arguments for the dictionary are optional:\n"
+  Rcpp::Rcerr << "\nThe following arguments for the dictionary are optional:\n"
             << "  -minCount           minimal number of word occurences ["
             << minCount << "]\n"
             << "  -minCountLabel      minimal number of label occurences ["
@@ -268,7 +268,7 @@ void Args::printDictionaryHelp() {
 }
 
 void Args::printTrainingHelp() {
-  std::cerr
+  Rcpp::Rcerr
       << "\nThe following arguments for training are optional:\n"
       << "  -lr                 learning rate [" << lr << "]\n"
       << "  -lrUpdateRate       change the rate of updates for the learning "
@@ -292,7 +292,7 @@ void Args::printTrainingHelp() {
 }
 
 void Args::printAutotuneHelp() {
-  std::cerr << "\nThe following arguments are for autotune:\n"
+  Rcpp::Rcerr << "\nThe following arguments are for autotune:\n"
             << "  -autotune-validation            validation file to be used "
                "for evaluation\n"
             << "  -autotune-metric                metric objective {f1, "
@@ -308,7 +308,7 @@ void Args::printAutotuneHelp() {
 }
 
 void Args::printQuantizationHelp() {
-  std::cerr
+  Rcpp::Rcerr
       << "\nThe following arguments for quantization are optional:\n"
       << "  -cutoff             number of words and ngrams to retain ["
       << cutoff << "]\n"

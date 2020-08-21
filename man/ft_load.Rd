@@ -9,8 +9,6 @@ ft_load(file)
 \arguments{
 \item{file}{a character string giving the name of the file
 to be read in.}
-
-\item{model}{an object inheriting from \code{'fasttext'}.}
 }
 \value{
 an object inheriting from \code{"fasttext"}.

@@ -18,14 +18,14 @@
 
 #define LOG_VAL(name, val)                        \
   if (autotuneArgs.verbose > 2) {                 \
-    std::cout << #name " = " << val << std::endl; \
+    Rcpp::Rcout << #name " = " << val << std::endl; \
   }
 #define LOG_VAL_NAN(name, val)                      \
   if (autotuneArgs.verbose > 2) {                   \
     if (std::isnan(val)) {                          \
-      std::cout << #name " = NaN" << std::endl;     \
+      Rcpp::Rcout << #name " = NaN" << std::endl;     \
     } else {                                        \
-      std::cout << #name " = " << val << std::endl; \
+      Rcpp::Rcout << #name " = " << val << std::endl; \
     }                                               \
   }
 
@@ -219,20 +219,20 @@ void Autotune::printInfo(double maxDuration) {
   double progress = elapsed_ * 100 / maxDuration;
   progress = std::min(progress, 100.0);
 
-  std::cerr << "\r";
-  std::cerr << std::fixed;
-  std::cerr << "Progress: ";
-  std::cerr << std::setprecision(1) << std::setw(5) << progress << "%";
-  std::cerr << " Trials: " << std::setw(4) << trials_;
-  std::cerr << " Best score: " << std::setw(9) << std::setprecision(6);
+  Rcpp::Rcerr << "\r";
+  Rcpp::Rcerr << std::fixed;
+  Rcpp::Rcerr << "Progress: ";
+  Rcpp::Rcerr << std::setprecision(1) << std::setw(5) << progress << "%";
+  Rcpp::Rcerr << " Trials: " << std::setw(4) << trials_;
+  Rcpp::Rcerr << " Best score: " << std::setw(9) << std::setprecision(6);
   if (bestScore_ == kUnknownBestScore) {
-    std::cerr << "unknown";
+    Rcpp::Rcerr << "unknown";
   } else {
-    std::cerr << bestScore_;
+    Rcpp::Rcerr << bestScore_;
   }
-  std::cerr << " ETA: "
+  Rcpp::Rcerr << " ETA: "
             << utils::ClockPrint(std::max(maxDuration - elapsed_, 0.0));
-  std::cerr << std::flush;
+  Rcpp::Rcerr << std::flush;
 }
 
 void Autotune::timer(
@@ -269,7 +269,7 @@ void Autotune::startTimer(const Args& args) {
   auto previousSignalHandler = std::signal(SIGINT, signalHandler);
   interruptSignalHandler = [&]() {
     std::signal(SIGINT, previousSignalHandler);
-    std::cerr << std::endl << "Aborting autotune..." << std::endl;
+    Rcpp::Rcerr << std::endl << "Aborting autotune..." << std::endl;
     abort();
   };
 }
@@ -373,7 +373,7 @@ void Autotune::printSkippedArgs(const Args& autotuneArgs) {
                                                  "dsub"};
   for (const auto& arg : argsToCheck) {
     if (autotuneArgs.isManual(arg)) {
-      std::cerr << "Warning : " << arg
+      Rcpp::Rcerr << "Warning : " << arg
                 << " is manually set to a specific value. "
                 << "It will not be automatically optimized." << std::endl;
     }
@@ -429,7 +429,7 @@ void Autotune::train(const Args& autotuneArgs) {
         if (!sizeConstraintWarning && trials_ > 10 &&
             sizeConstraintFailed_ > (trials_ / 2)) {
           sizeConstraintWarning = true;
-          std::cerr << std::endl
+          Rcpp::Rcerr << std::endl
                     << "Warning : requested model size is probably too small. "
                        "You may want to increase `autotune-modelsize`."
                     << std::endl;
@@ -464,8 +464,8 @@ void Autotune::train(const Args& autotuneArgs) {
     }
     Rcpp::stop(errorMessage);
   } else {
-    std::cerr << std::endl;
-    std::cerr << "Training again with best arguments" << std::endl;
+    Rcpp::Rcerr << std::endl;
+    Rcpp::Rcerr << "Training again with best arguments" << std::endl;
     bestTrainArgs.verbose = verbose;
     LOG_VAL(Best selected args, 0)
     printArgs(bestTrainArgs, autotuneArgs);

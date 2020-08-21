@@ -25,6 +25,7 @@ export(ft_normalize)
 export(ft_load)
 export(ft_save)
 
+S3method(print, fasttext)
 S3method(print, cbow_model)
 S3method(print, skipgram_model)
 S3method(print, supervised_model)

@@ -17,7 +17,7 @@
 using namespace fasttext;
 
 void printUsage() {
-  std::cerr
+  Rcpp::Rcerr
       << "usage: fasttext <command> <args>\n\n"
       << "The commands supported by fasttext are:\n\n"
       << "  supervised              train a supervised classifier\n"
@@ -44,11 +44,11 @@ void printUsage() {
 }
 
 void printQuantizeUsage() {
-  std::cerr << "usage: fasttext quantize <args>" << std::endl;
+  Rcpp::Rcerr << "usage: fasttext quantize <args>" << std::endl;
 }
 
 void printTestUsage() {
-  std::cerr
+  Rcpp::Rcerr
       << "usage: fasttext test <model> <test-data> [<k>] [<th>]\n\n"
       << "  <model>      model filename\n"
       << "  <test-data>  test data filename (if -, read from stdin)\n"
@@ -58,7 +58,7 @@ void printTestUsage() {
 }
 
 void printPredictUsage() {
-  std::cerr
+  Rcpp::Rcerr
       << "usage: fasttext predict[-prob] <model> <test-data> [<k>] [<th>]\n\n"
       << "  <model>      model filename\n"
       << "  <test-data>  test data filename (if -, read from stdin)\n"
@@ -68,7 +68,7 @@ void printPredictUsage() {
 }
 
 void printTestLabelUsage() {
-  std::cerr
+  Rcpp::Rcerr
       << "usage: fasttext test-label <model> <test-data> [<k>] [<th>]\n\n"
       << "  <model>      model filename\n"
       << "  <test-data>  test data filename\n"
@@ -78,19 +78,19 @@ void printTestLabelUsage() {
 }
 
 void printPrintWordVectorsUsage() {
-  std::cerr << "usage: fasttext print-word-vectors <model>\n\n"
+  Rcpp::Rcerr << "usage: fasttext print-word-vectors <model>\n\n"
             << "  <model>      model filename\n"
             << std::endl;
 }
 
 void printPrintSentenceVectorsUsage() {
-  std::cerr << "usage: fasttext print-sentence-vectors <model>\n\n"
+  Rcpp::Rcerr << "usage: fasttext print-sentence-vectors <model>\n\n"
             << "  <model>      model filename\n"
             << std::endl;
 }
 
 void printPrintNgramsUsage() {
-  std::cerr << "usage: fasttext print-ngrams <model> <word>\n\n"
+  Rcpp::Rcerr << "usage: fasttext print-ngrams <model> <word>\n\n"
             << "  <model>      model filename\n"
             << "  <word>       word to print\n"
             << std::endl;
@@ -101,7 +101,7 @@ void quantize(const std::vector<std::string>& args) {
   if (args.size() < 3) {
     printQuantizeUsage();
     a.printHelp();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   a.parseArgs(args);
   FastText fasttext;
@@ -113,21 +113,21 @@ void quantize(const std::vector<std::string>& args) {
 }
 
 void printNNUsage() {
-  std::cout << "usage: fasttext nn <model> <k>\n\n"
+  Rcpp::Rcout << "usage: fasttext nn <model> <k>\n\n"
             << "  <model>      model filename\n"
             << "  <k>          (optional; 10 by default) predict top k labels\n"
             << std::endl;
 }
 
 void printAnalogiesUsage() {
-  std::cout << "usage: fasttext analogies <model> <k>\n\n"
+  Rcpp::Rcout << "usage: fasttext analogies <model> <k>\n\n"
             << "  <model>      model filename\n"
             << "  <k>          (optional; 10 by default) predict top k labels\n"
             << std::endl;
 }
 
 void printDumpUsage() {
-  std::cout << "usage: fasttext dump <model> <option>\n\n"
+  Rcpp::Rcout << "usage: fasttext dump <model> <option>\n\n"
             << "  <model>      model filename\n"
             << "  <option>     option from args,dict,input,output" << std::endl;
 }
@@ -137,7 +137,7 @@ void test(const std::vector<std::string>& args) {
 
   if (args.size() < 4 || args.size() > 6) {
     perLabel ? printTestLabelUsage() : printTestUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
 
   const auto& model = args[2];
@@ -155,22 +155,22 @@ void test(const std::vector<std::string>& args) {
   } else {
     std::ifstream ifs(input);
     if (!ifs.is_open()) {
-      std::cerr << "Test file cannot be opened!" << std::endl;
-      exit(EXIT_FAILURE);
+      Rcpp::Rcerr << "Test file cannot be opened!" << std::endl;
+      Rcpp::stop("EXIT_FAILURE");
     }
     fasttext.test(ifs, k, threshold, meter);
   }
 
   if (perLabel) {
-    std::cout << std::fixed << std::setprecision(6);
+    Rcpp::Rcout << std::fixed << std::setprecision(6);
     auto writeMetric = [](const std::string& name, double value) {
-      std::cout << name << " : ";
+      Rcpp::Rcout << name << " : ";
       if (std::isfinite(value)) {
-        std::cout << value;
+        Rcpp::Rcout << value;
       } else {
-        std::cout << "--------";
+        Rcpp::Rcout << "--------";
       }
-      std::cout << "  ";
+      Rcpp::Rcout << "  ";
     };
 
     std::shared_ptr<const Dictionary> dict = fasttext.getDictionary();
@@ -178,10 +178,10 @@ void test(const std::vector<std::string>& args) {
       writeMetric("F1-Score", meter.f1Score(labelId));
       writeMetric("Precision", meter.precision(labelId));
       writeMetric("Recall", meter.recall(labelId));
-      std::cout << " " << dict->getLabel(labelId) << std::endl;
+      Rcpp::Rcout << " " << dict->getLabel(labelId) << std::endl;
     }
   }
-  meter.writeGeneralMetrics(std::cout, k);
+  meter.writeGeneralMetrics(Rcpp::Rcout, k);
 
   exit(0);
 }
@@ -193,26 +193,26 @@ void printPredictions(
   bool first = true;
   for (const auto& prediction : predictions) {
     if (!first && !multiline) {
-      std::cout << " ";
+      Rcpp::Rcout << " ";
     }
     first = false;
-    std::cout << prediction.second;
+    Rcpp::Rcout << prediction.second;
     if (printProb) {
-      std::cout << " " << prediction.first;
+      Rcpp::Rcout << " " << prediction.first;
     }
     if (multiline) {
-      std::cout << std::endl;
+      Rcpp::Rcout << std::endl;
     }
   }
   if (!multiline) {
-    std::cout << std::endl;
+    Rcpp::Rcout << std::endl;
   }
 }
 
 void predict(const std::vector<std::string>& args) {
   if (args.size() < 4 || args.size() > 6) {
     printPredictUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   int32_t k = 1;
   real threshold = 0.0;
@@ -233,8 +233,8 @@ void predict(const std::vector<std::string>& args) {
   if (!inputIsStdIn) {
     ifs.open(infile);
     if (!inputIsStdIn && !ifs.is_open()) {
-      std::cerr << "Input file cannot be opened!" << std::endl;
-      exit(EXIT_FAILURE);
+      Rcpp::Rcerr << "Input file cannot be opened!" << std::endl;
+      Rcpp::stop("EXIT_FAILURE");
     }
   }
   std::istream& in = inputIsStdIn ? std::cin : ifs;
@@ -252,7 +252,7 @@ void predict(const std::vector<std::string>& args) {
 void printWordVectors(const std::vector<std::string> args) {
   if (args.size() != 3) {
     printPrintWordVectorsUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
@@ -260,7 +260,7 @@ void printWordVectors(const std::vector<std::string> args) {
   Vector vec(fasttext.getDimension());
   while (std::cin >> word) {
     fasttext.getWordVector(vec, word);
-    std::cout << word << " " << vec << std::endl;
+    Rcpp::Rcout << word << " " << vec << std::endl;
   }
   exit(0);
 }
@@ -268,7 +268,7 @@ void printWordVectors(const std::vector<std::string> args) {
 void printSentenceVectors(const std::vector<std::string> args) {
   if (args.size() != 3) {
     printPrintSentenceVectorsUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
@@ -276,7 +276,7 @@ void printSentenceVectors(const std::vector<std::string> args) {
   while (std::cin.peek() != EOF) {
     fasttext.getSentenceVector(std::cin, svec);
     // Don't print sentence
-    std::cout << svec << std::endl;
+    Rcpp::Rcout << svec << std::endl;
   }
   exit(0);
 }
@@ -284,7 +284,7 @@ void printSentenceVectors(const std::vector<std::string> args) {
 void printNgrams(const std::vector<std::string> args) {
   if (args.size() != 4) {
     printPrintNgramsUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
@@ -294,7 +294,7 @@ void printNgrams(const std::vector<std::string> args) {
       fasttext.getNgramVectors(word);
 
   for (const auto& ngramVector : ngramVectors) {
-    std::cout << ngramVector.first << " " << ngramVector.second << std::endl;
+    Rcpp::Rcout << ngramVector.first << " " << ngramVector.second << std::endl;
   }
 
   exit(0);
@@ -308,17 +308,17 @@ void nn(const std::vector<std::string> args) {
     k = std::stoi(args[3]);
   } else {
     printNNUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   FastText fasttext;
   fasttext.loadModel(std::string(args[2]));
   std::string prompt("Query word? ");
-  std::cout << prompt;
+  Rcpp::Rcout << prompt;
 
   std::string queryWord;
   while (std::cin >> queryWord) {
     printPredictions(fasttext.getNN(queryWord, k), true, true);
-    std::cout << prompt;
+    Rcpp::Rcout << prompt;
   }
   exit(0);
 }
@@ -331,26 +331,26 @@ void analogies(const std::vector<std::string> args) {
     k = std::stoi(args[3]);
   } else {
     printAnalogiesUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   if (k <= 0) {
     Rcpp::stop("k needs to be 1 or higher!");
   }
   FastText fasttext;
   std::string model(args[2]);
-  std::cout << "Loading model " << model << std::endl;
+  Rcpp::Rcout << "Loading model " << model << std::endl;
   fasttext.loadModel(model);
 
   std::string prompt("Query triplet (A - B + C)? ");
   std::string wordA, wordB, wordC;
-  std::cout << prompt;
+  Rcpp::Rcout << prompt;
   while (true) {
     std::cin >> wordA;
     std::cin >> wordB;
     std::cin >> wordC;
     printPredictions(fasttext.getAnalogies(k, wordA, wordB, wordC), true, true);
 
-    std::cout << prompt;
+    Rcpp::Rcout << prompt;
   }
   exit(0);
 }
@@ -389,7 +389,7 @@ void train(const std::vector<std::string> args) {
 void dump(const std::vector<std::string>& args) {
   if (args.size() < 4) {
     printDumpUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
 
   std::string modelPath = args[2];
@@ -398,24 +398,24 @@ void dump(const std::vector<std::string>& args) {
   FastText fasttext;
   fasttext.loadModel(modelPath);
   if (option == "args") {
-    fasttext.getArgs().dump(std::cout);
+    fasttext.getArgs().dump(Rcpp::Rcout);
   } else if (option == "dict") {
-    fasttext.getDictionary()->dump(std::cout);
+    fasttext.getDictionary()->dump(Rcpp::Rcout);
   } else if (option == "input") {
     if (fasttext.isQuant()) {
-      std::cerr << "Not supported for quantized models." << std::endl;
+      Rcpp::Rcerr << "Not supported for quantized models." << std::endl;
     } else {
-      fasttext.getInputMatrix()->dump(std::cout);
+      fasttext.getInputMatrix()->dump(Rcpp::Rcout);
     }
   } else if (option == "output") {
     if (fasttext.isQuant()) {
-      std::cerr << "Not supported for quantized models." << std::endl;
+      Rcpp::Rcerr << "Not supported for quantized models." << std::endl;
     } else {
-      fasttext.getOutputMatrix()->dump(std::cout);
+      fasttext.getOutputMatrix()->dump(Rcpp::Rcout);
     }
   } else {
     printDumpUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
 }
 
@@ -423,7 +423,7 @@ int main(int argc, char** argv) {
   std::vector<std::string> args(argv, argv + argc);
   if (args.size() < 2) {
     printUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   std::string command(args[1]);
   if (command == "skipgram" || command == "cbow" || command == "supervised") {
@@ -448,7 +448,7 @@ int main(int argc, char** argv) {
     dump(args);
   } else {
     printUsage();
-    exit(EXIT_FAILURE);
+    Rcpp::stop("EXIT_FAILURE");
   }
   return 0;
 }

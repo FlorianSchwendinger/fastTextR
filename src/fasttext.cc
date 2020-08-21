@@ -795,8 +795,8 @@ void FastText::startThreads(const TrainCallback& callback) {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if (loss_ >= 0 && args_->verbose > 1) {
       real progress = real(tokenCount_) / (args_->epoch * ntokens);
-      std::cerr << "\r";
-      printInfo(progress, loss_, std::cerr);
+      Rcpp::Rcerr << "\r";
+      printInfo(progress, loss_, Rcpp::Rcerr);
     }
   }
   for (int32_t i = 0; i < threads.size(); i++) {
@@ -808,9 +808,9 @@ void FastText::startThreads(const TrainCallback& callback) {
     std::rethrow_exception(exception);
   }
   if (args_->verbose > 0) {
-    std::cerr << "\r";
-    printInfo(1.0, loss_, std::cerr);
-    std::cerr << std::endl;
+    Rcpp::Rcerr << "\r";
+    printInfo(1.0, loss_, Rcpp::Rcerr);
+    Rcpp::Rcerr << std::endl;
   }
 }
 

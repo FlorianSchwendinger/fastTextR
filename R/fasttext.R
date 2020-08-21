@@ -35,7 +35,7 @@
 #' @param qout a logical (default is \code{FALSE})
 #' @param cutoff an integer (default is \code{0L})
 #' @param dsub an integer (default is \code{2L})
-#' @param autotune_validation_file="", 
+#' @param autotune_validation_file a character string
 #' @param autotune_metric a character string (default is \code{"f1"})
 #' @param autotune_predictions an integer (default is \code{1L})
 #' @param autotune_duration an integer (default is \code{300L})
@@ -79,6 +79,15 @@ check_control_arguments <- function(control) {
 }
 
 
+# -----------------------------------------------------------
+#  fasttext
+#  ========
+#' @title Create a New \code{FastText} Model
+#' @description Create a new \code{FastText} model. The available methods
+#'  are the same as the package functions but with out the prefix \code{"ft_"}
+#'  and without the need to provide the model.
+#' @examples
+#' ft <- fasttext()
 fasttext <- function() {
     model <- new.env(parent = emptyenv())
 
@@ -88,8 +97,9 @@ fasttext <- function() {
     model$ntoken <- 0L
     model$nlabels <- 0L
 
-    model$update <- function(new_model) {
-        self <- parent.env(environment())$model
+    #model$update <- function(new_model) {
+    update_model <- function(self, new_model) {
+        # self <- parent.env(environment())$model
         self$pointer <- new_model$pointer
         self$model_type <- new_model$model_type
         self$nwords <- new_model$nwords
@@ -101,7 +111,8 @@ fasttext <- function() {
 
     model$load <- function(file) {
         self <- parent.env(environment())$model
-        self$update(ft_load(file))
+        # self$update(ft_load(file))
+        update_model(self, ft_load(file))
         return(invisible(NULL))
     }
 
@@ -112,7 +123,8 @@ fasttext <- function() {
     model$train <- function(file, method = c("supervised", "cbow", "skipgram"), 
                             output = "", control = ft_control(), ...) {
         self <- parent.env(environment())$model
-        self$update(ft_train(file, method, output, control, ...))
+        # self$update(ft_train(file, method, output, control, ...))
+        update_model(self, ft_train(file, method, output, control, ...))
         return(invisible(NULL))
     }
 
@@ -273,7 +285,6 @@ ft_test <- function(model, file, k=1L, threshold=0.0) {
 #  =============
 #' @title Load Model
 #' @description Load a previously saved model from file.
-#' @param model an object inheriting from \code{'fasttext'}.
 #' @param file a character string giving the name of the file
 #'             to be read in.
 #' @return an object inheriting from \code{"fasttext"}.
@@ -397,8 +408,20 @@ ft_analogies <- function(model, word_triplets, k = 10L) {
                   word_triplets[3L], as.integer(k))
 }
 
+
+print_fasttext_methods <- function(x) {
+    hide <- c("nlabels",  "ntoken", "nwords", "pointer", "update")
+    ft_methods <- setdiff(ls(x), hide)
+    for (method in ft_methods) {
+        args <- gsub("function ", "", trimws(capture.output(str(get(method, envir = x)))))
+        cat("  $", method, args, "\n", sep="")
+    }
+}
+
+
 print.fasttext <- function(x, ...) {
-    cat("Empty fastText model.")
+    cat("Empty fastText model:\n")
+    print_fasttext_methods(x)
 }
 
 print.cbow_model <- function(x, ...) {
