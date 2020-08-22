@@ -117,7 +117,7 @@ void Args::parseArgs(const std::vector<std::string>& args) {
   } else if (command == "cbow") {
     model = model_name::cbow;
   }
-  for (int ai = 2; ai < args.size(); ai += 2) {
+  for (long unsigned int ai = 2; ai < args.size(); ai += 2) {
     if (args[ai][0] != '-') {
       Rcpp::Rcerr << "Provided argument without a dash! Usage:" << std::endl;
       printHelp();
@@ -218,7 +218,7 @@ void Args::parseArgs(const std::vector<std::string>& args) {
         printHelp();
         Rcpp::stop("EXIT_FAILURE");
       }
-    } catch (std::out_of_range) {
+    } catch (const std::out_of_range&) {
       Rcpp::Rcerr << args[ai] << " is missing an argument" << std::endl;
       printHelp();
       Rcpp::stop("EXIT_FAILURE");

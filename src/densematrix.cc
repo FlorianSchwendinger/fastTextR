@@ -170,6 +170,6 @@ void DenseMatrix::dump(std::ostream& out) const {
     }
     out << std::endl;
   }
-};
+}
 
 } // namespace fasttext

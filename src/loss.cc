@@ -341,6 +341,6 @@ real SoftmaxLoss::forward(
     }
   }
   return -log(state.output[target]);
-};
+}
 
 } // namespace fasttext
