@@ -68,7 +68,7 @@ model <- ft_load("dbpedia.bin")
 ### Predict / Test Model
 To perform prediction the function `predict` can be used.
 ```{r}
-test_pred <- ft_predict(model, new_data=test, k = 1L)
+test_pred <- ft_predict(model, newdata=test, k = 1L)
 str(test_pred)
 
 confusion_matrix <- table(as.integer(labels), as.integer(gsub("\\D", "", test_pred$label)))
@@ -96,10 +96,11 @@ if ( !file.exists(fn) ) {
 ```
 
 ### Prepare Data
-```{r}
 The function `clean_wiki` mimics the data preparation steps of the perl 
 script `wikifil.pl` 
 (`https://github.com/facebookresearch/fastText/blob/master/wikifil.pl`).
+```{r}
+library("XML")
 
 clean_wiki <- function(x) {
     stopifnot(is.character(x))
@@ -142,7 +143,6 @@ clean_wiki <- function(x) {
     x
 }
 
-library(XML)
 fn <- "fil9"
 if ( !file.exists(fn) ) {
     html <- htmlParse("enwik9", encoding = "UTF-8")

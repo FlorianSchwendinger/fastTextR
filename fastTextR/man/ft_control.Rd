@@ -10,8 +10,8 @@ ft_control(loss = c("softmax", "hs", "ns"), learning_rate = 0.05,
   max_len_ngram = 1L, nbuckets = 2000000L, min_ngram = 3L,
   max_ngram = 6L, nthreads = 1L, threshold = 1e-04,
   label = "__label__", verbose = 0, pretrained_vectors = "",
-  save_output = FALSE, seed = 0L, qnorm = FALSE, retrain = FALSE,
-  qout = FALSE, cutoff = 0L, dsub = 2L,
+  output = "", save_output = FALSE, seed = 0L, qnorm = FALSE,
+  retrain = FALSE, qout = FALSE, cutoff = 0L, dsub = 2L,
   autotune_validation_file = "", autotune_metric = "f1",
   autotune_predictions = 1L, autotune_duration = 300L,
   autotune_model_size = "")
@@ -59,6 +59,8 @@ cann't handle the traffic.}
 \item{pretrained_vectors}{a character string giving the file path
 to the pretrained word vectors which are used 
 for the supervised learning.}
+
+\item{output}{a character string giving the output file path.}
 
 \item{save_output}{a logical (default is \code{FALSE})}
 
