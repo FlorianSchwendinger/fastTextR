@@ -28,6 +28,7 @@
 #' @param pretrained_vectors a character string giving the file path
 #'                           to the pretrained word vectors which are used 
 #'                           for the supervised learning.
+#' @param output a character string giving the output file path.
 #' @param save_output a logical (default is \code{FALSE})
 #' @param seed an integer 
 #' @param qnorm  a logical (default is \code{FALSE})
@@ -48,13 +49,15 @@ ft_control <- function(loss = c("softmax", "hs", "ns"),
                        window_size=5L, epoch=5L, min_count=5L, min_count_label=0L,
                        neg=5L, max_len_ngram=1L, nbuckets=2000000L, min_ngram=3L,
                        max_ngram=6L, nthreads=1L, threshold=1e-4, label="__label__", 
-                       verbose=0, pretrained_vectors="", save_output=FALSE, 
+                       verbose=0, pretrained_vectors="", output="", save_output=FALSE, 
                        seed=0L, qnorm=FALSE, retrain=FALSE, qout=FALSE, cutoff=0L, 
                        dsub=2L, autotune_validation_file="", autotune_metric="f1", 
                        autotune_predictions=1L, autotune_duration=300L, 
                        autotune_model_size="") {
     loss <- match.arg(loss)
-    as.list(environment())
+    cntrl <- as.list(environment())
+    class(cntrl) <- c("ft_control", class(cntrl))
+    cntrl
 }
 
 
@@ -186,8 +189,7 @@ fasttext <- function() {
 ft_train <- function(file, method = c("supervised", "cbow", "skipgram"), 
                      control = ft_control(), ...) {
     method <- match.arg(method)
-    stopifnot( is.character(file) )
-    stopifnot( file.exists(file) )
+    stopifnot( is.character(file), file.exists(file), inherits(control, "ft_control") )
     control <- modifyList(control, list(...))
 
     control$input <- file
