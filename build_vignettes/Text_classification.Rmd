@@ -1,0 +1,111 @@
+---
+title: fastTextR - Text Classification
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Text_Classification}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+**fastTextR** is an **R** interface to the [fastText](https://github.com/facebookresearch/fastText)
+library. It can be used to **word representation learning** *(Bojanowski et al., 2016)* and 
+**supervised text classification** *(Joulin et al., 2016)*.
+Particularly the advantage of **fastText** to other software is that, 
+it was designed for biggish data.
+
+The following example is based on the examples provided in the **fastText** library, 
+the example shows how to use **fastTextR** text classification.
+
+## Download Data    
+```{r, download_data}
+options(width=100L)
+fn <- "dbpedia_csv.tar.gz"
+
+if ( !file.exists(fn) ) {
+    download.file("https://github.com/le-scientifique/torchDatasets/raw/master/dbpedia_csv.tar.gz",
+                  fn)
+    untar(fn)
+}
+```
+
+## Normalize Data
+In **fastText** labels are typically marked with `__label__1` to `__label__k`.
+Since **fastText** relies at the order of the trainings data it is important
+to ensure the order of the trainings data follows no particular pattern
+(which is done here with `sample`). The function `normalize` mimics
+the data preparation steps of the bash function `normalize_text`
+as shown in 
+[classification-example.sh](https://github.com/facebookresearch/fastText/blob/master/classification-example.sh).
+
+```{r, normalize_data}
+library("fastTextR")
+
+train <- sample(sprintf("__label__%s", readLines("dbpedia_csv/train.csv")))
+head(train, 2)
+
+train <- ft_normalize(train)
+writeLines(train, con = "dbpedia.train")
+
+test <- readLines("dbpedia_csv/test.csv")
+labels <- trimws(gsub(",.*", "", test))
+table(labels)
+test <- ft_normalize(test)
+test <- trimws(sub(".*?,", "", test))
+head(test, 2)
+```
+
+## Train Model
+After the data preparation the model can be trained and is saved to 
+the file `"dbpedia.bin"`.
+```{r, train_model}
+cntrl <- ft_control(word_vec_size = 10L, learning_rate = 0.1, max_len_ngram = 2L, 
+                    min_count = 1L, nbuckets = 10000000L, epoch = 5L, nthreads = 4L)
+
+model <- ft_train(file = "dbpedia.train", method = "supervised", control = cntrl)
+ft_save(model, "dbpedia.bin")
+```
+
+## Read Model
+A previously trained model can be loaded via the function `read.fasttext`.
+```{r, read_model}
+model <- ft_load("dbpedia.bin")
+```
+
+## Predict / Test Model
+To perform prediction the function `predict` can be used.
+```{r, predict_test_model}
+test_pred <- ft_predict(model, newdata=test, k = 1L)
+str(test_pred)
+
+confusion_matrix <- table(truth=as.integer(labels), 
+                          predicted=as.integer(gsub("\\D", "", test_pred$label)))
+print(confusion_matrix)
+
+accuracy <- sum(diag(confusion_matrix)) / sum(confusion_matrix)
+print(sprintf("Accuracy: %0.4f", accuracy))
+```
+
+
+## References
+
+[1] P. Bojanowski, E. Grave, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
+
+```
+@article{bojanowski2016enriching,
+  title={Enriching Word Vectors with Subword Information},
+  author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.04606},
+  year={2016}
+}
+```
+
+[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/abs/1607.01759)
+
+```
+@article{joulin2016bag,
+  title={Bag of Tricks for Efficient Text Classification},
+  author={Joulin, Armand and Grave, Edouard and Bojanowski, Piotr and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.01759},
+  year={2016}
+}
+```

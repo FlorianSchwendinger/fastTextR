@@ -1,0 +1,70 @@
+---
+title: fastTextR - Word representations
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Word_representations}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+**fastTextR** is an **R** interface to the [fastText](https://github.com/facebookresearch/fastText)
+library. It can be used to **word representation learning** *(Bojanowski et al., 2016)* and 
+**supervised text classification** *(Joulin et al., 2016)*.
+Particularly the advantage of **fastText** to other software is that, 
+it was designed for biggish data.
+
+The following example is based on the examples provided in the **fastText** library, 
+the example shows how to use **fastTextR** for word representation.
+For more informations about word representations can be found at the
+[fastText  homepage](https://fasttext.cc/docs/en/unsupervised-tutorial.html).
+```{r}
+library("fastTextR")
+```
+
+
+## Load pretrained model
+The training of these models can be quite time consuming therefore pre-trained 
+models are a good option.
+```{r, load}
+model <- ft_load("cc.en.300.bin")
+```
+
+## Printing word vectors
+```{r, print}
+ft_word_vectors(model, c("asparagus", "pidgey", "yellow"))[,1:5]
+```
+
+## Nearest neighbor queries
+```{r, neighbor_queries}
+ft_nearest_neighbors(model, 'asparagus', k = 5L)
+```
+
+## Word analogies
+```{r, analogies}
+ft_analogies(model, c("berlin", "germany", "france"))
+```
+
+
+## References
+
+[1] P. Bojanowski, E. Grave, A. Joulin, T. Mikolov, [*Enriching Word Vectors with Subword Information*](https://arxiv.org/abs/1607.04606)
+
+```
+@article{bojanowski2016enriching,
+  title={Enriching Word Vectors with Subword Information},
+  author={Bojanowski, Piotr and Grave, Edouard and Joulin, Armand and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.04606},
+  year={2016}
+}
+```
+
+[2] A. Joulin, E. Grave, P. Bojanowski, T. Mikolov, [*Bag of Tricks for Efficient Text Classification*](https://arxiv.org/abs/1607.01759)
+
+```
+@article{joulin2016bag,
+  title={Bag of Tricks for Efficient Text Classification},
+  author={Joulin, Armand and Grave, Edouard and Bojanowski, Piotr and Mikolov, Tomas},
+  journal={arXiv preprint arXiv:1607.01759},
+  year={2016}
+}
+```
