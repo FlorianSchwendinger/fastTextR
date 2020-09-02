@@ -2,8 +2,7 @@ Package: fastTextR
 Type: Package
 Title: An Interface to the 'fastText' Library
 Version: 1.1
-Author: Florian Schwendinger [aut, cre]
-Maintainer: Florian Schwendinger <FlorianSchwendinger@gmx.at>
+Authors@R: c(person("Florian", "Schwendinger", role = "aut"))
 Description: An interface to the 'fastText' library
 	<https://github.com/facebookresearch/fastText>. The package
 	can be used for text classification and to learn word vectors.
