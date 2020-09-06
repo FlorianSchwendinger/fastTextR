@@ -2,7 +2,13 @@ Package: fastTextR
 Type: Package
 Title: An Interface to the 'fastText' Library
 Version: 1.1
-Authors@R: c(person("Florian", "Schwendinger", role = "aut"))
+Authors@R: 
+    c(person("Florian", "Schwendinger", role = "aut"),
+      person(given = "Emil",
+             family = "Hvitfeldt",
+             role = c("aut", "cre"),
+             email = "emilhhvitfeldt@gmail.com",
+             comment = c(ORCID = "0000-0002-0679-1945")))
 Description: An interface to the 'fastText' library
 	<https://github.com/facebookresearch/fastText>. The package
 	can be used for text classification and to learn word vectors.
